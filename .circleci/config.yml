@@ -21,8 +21,12 @@ jobs:
       - run:
           name: Test Docker container
           command: |
-            sleep 10 # Attendre que le conteneur soit prêt
-            curl --fail http://localhost:8080/
+            sleep 20 # Augmenter le temps d'attente pour que le conteneur soit prêt
+            if ! curl --fail http://localhost:8080/; then
+              echo "Failed to connect to the container. Logs:"
+              docker logs myapp_container
+              exit 1
+            fi
       - run:
           name: Push application Docker image
           command: |
