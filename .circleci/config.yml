@@ -11,6 +11,9 @@ jobs:
       - docker/build:
           image: my-node-app
           tag: latest
+      - run:
+          name: Save Docker image
+          command: docker save my-node-app | gzip > my-node-app.tar.gz
       - persist_to_workspace:
           root: .
           paths:
@@ -24,12 +27,10 @@ jobs:
           at: .
       - run:
           name: Load Docker image
-          command: |
-            gunzip -c ./my-node-app.tar.gz | docker load
+          command: gunzip -c ./my-node-app.tar.gz | docker load
       - run:
           name: Run Docker container
-          command: |
-            docker run -d -p 8080:8080 --name my-node-app my-node-app
+          command: docker run -d -p 8080:8080 --name my-node-app my-node-app
       - run:
           name: Test Docker container
           command: |
@@ -44,14 +45,14 @@ jobs:
           at: .
       - run:
           name: Load Docker image
-          command: |
-            gunzip -c ./my-node-app.tar.gz | docker load
+          command: gunzip -c ./my-node-app.tar.gz | docker load
+      - docker/login:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
       - docker/push:
           image: my-node-app
           tag: latest
           registry: docker.io
-          username: $DOCKERHUB_USERNAME
-          password: $DOCKERHUB_PASSWORD
 
 workflows:
   version: 2
