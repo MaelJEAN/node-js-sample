@@ -8,14 +8,20 @@ orbs:
 
 jobs:
   build_and_test:
-    executor: node/default # use the default executor defined within the orb
+    executor: node/default
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
       - run:
-          command: npm run build
+          name: Lint code
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm test
+      - run:
           name: Build app
+          command: npm run build
       - persist_to_workspace:
           root: ~/project
           paths:
